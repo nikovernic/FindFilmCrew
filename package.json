@@ -1,0 +1,27 @@
+{
+  "name": "crew-up",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Crew Up - Production crew database platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "start": "pnpm --filter web start",
+    "lint": "pnpm --filter web lint",
+    "type-check": "pnpm --filter web type-check",
+    "test": "pnpm --filter web test",
+    "test:unit": "pnpm --filter web test:unit",
+    "test:integration": "pnpm --filter web test:integration",
+    "test:e2e": "pnpm --filter web test:e2e"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
+
