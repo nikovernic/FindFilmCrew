@@ -1,4 +1,6 @@
 import type { Credit } from '@crew-up/shared'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Film, Calendar, Clapperboard, Building2, User } from 'lucide-react'
 
 interface CreditsListProps {
   credits: Credit[]
@@ -7,9 +9,11 @@ interface CreditsListProps {
 export function CreditsList({ credits }: CreditsListProps) {
   if (credits.length === 0) {
     return (
-      <div className="text-muted-foreground">
-        <p>No credits available.</p>
-      </div>
+      <EmptyState
+        variant="credits"
+        title="No credits yet"
+        description="This crew member hasn't added any credits to their profile."
+      />
     )
   }
 
@@ -17,26 +21,58 @@ export function CreditsList({ credits }: CreditsListProps) {
   const sortedCredits = [...credits].sort((a, b) => a.display_order - b.display_order)
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Credits</h2>
-      <div className="space-y-6">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Film className="h-5 w-5 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold">Credits</h2>
+        <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+          {credits.length}
+        </span>
+      </div>
+
+      <div className="space-y-4">
         {sortedCredits.map((credit) => (
-          <div key={credit.id} className="border-l-4 border-primary pl-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div>
-                <h3 className="text-lg font-semibold">{credit.project_title}</h3>
-                <p className="text-muted-foreground">
-                  {credit.role} • {credit.project_type} • {credit.year}
-                </p>
-                {credit.production_company && (
-                  <p className="text-sm text-muted-foreground">
-                    {credit.production_company}
-                  </p>
-                )}
-                {credit.director && (
-                  <p className="text-sm text-muted-foreground">
-                    Director: {credit.director}
-                  </p>
+          <div
+            key={credit.id}
+            className="group relative p-5 rounded-xl border bg-card hover:border-primary/30 transition-colors"
+          >
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                  {credit.project_title}
+                </h3>
+                <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clapperboard className="h-4 w-4" />
+                    {credit.role}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Film className="h-4 w-4" />
+                    {credit.project_type}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Calendar className="h-4 w-4" />
+                    {credit.year}
+                  </span>
+                </div>
+
+                {(credit.production_company || credit.director) && (
+                  <div className="mt-3 pt-3 border-t flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    {credit.production_company && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Building2 className="h-4 w-4" />
+                        {credit.production_company}
+                      </span>
+                    )}
+                    {credit.director && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <User className="h-4 w-4" />
+                        Dir. {credit.director}
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -46,5 +82,3 @@ export function CreditsList({ credits }: CreditsListProps) {
     </div>
   )
 }
-
-

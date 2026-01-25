@@ -1,10 +1,12 @@
 import { profileService } from '@/lib/services/profileService'
 import { ProfileCard } from '@/components/profile/ProfileCard'
 import { SearchFilters } from '@/components/search/SearchFilters'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { buildSearchQuery } from '@/lib/services/searchService'
 import type { Metadata } from 'next'
 import { getAbsoluteUrl } from '@/lib/utils/url'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
 interface SearchPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -121,19 +123,25 @@ function PaginationControls({
 
   return (
     <nav
-      className="flex items-center justify-center gap-2 mt-8"
+      className="flex items-center justify-center gap-1 mt-12"
       aria-label="Pagination"
     >
-      {currentPage > 1 && (
-        <Link
-          href={buildUrl(currentPage - 1)}
-          className="px-4 py-2 border rounded-md hover:bg-accent"
-        >
-          Previous
-        </Link>
-      )}
+      {/* Previous button */}
+      <Link
+        href={currentPage > 1 ? buildUrl(currentPage - 1) : '#'}
+        className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+          currentPage > 1
+            ? 'hover:bg-accent text-foreground'
+            : 'text-muted-foreground/50 pointer-events-none'
+        }`}
+        aria-disabled={currentPage <= 1}
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Previous
+      </Link>
 
-      <div className="flex gap-2">
+      {/* Page numbers */}
+      <div className="flex items-center gap-1 mx-2">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
           if (
             page === 1 ||
@@ -144,7 +152,7 @@ function PaginationControls({
               <Link
                 key={page}
                 href={buildUrl(page)}
-                className={`px-4 py-2 border rounded-md ${
+                className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg font-medium transition-colors ${
                   page === currentPage
                     ? 'bg-primary text-primary-foreground'
                     : 'hover:bg-accent'
@@ -158,7 +166,7 @@ function PaginationControls({
             page === currentPage + 2
           ) {
             return (
-              <span key={page} className="px-4 py-2">
+              <span key={page} className="px-2 text-muted-foreground">
                 ...
               </span>
             )
@@ -167,14 +175,19 @@ function PaginationControls({
         })}
       </div>
 
-      {currentPage < totalPages && (
-        <Link
-          href={buildUrl(currentPage + 1)}
-          className="px-4 py-2 border rounded-md hover:bg-accent"
-        >
-          Next
-        </Link>
-      )}
+      {/* Next button */}
+      <Link
+        href={currentPage < totalPages ? buildUrl(currentPage + 1) : '#'}
+        className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+          currentPage < totalPages
+            ? 'hover:bg-accent text-foreground'
+            : 'text-muted-foreground/50 pointer-events-none'
+        }`}
+        aria-disabled={currentPage >= totalPages}
+      >
+        Next
+        <ChevronRight className="h-4 w-4" />
+      </Link>
     </nav>
   )
 }
@@ -202,31 +215,47 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <main className="min-h-screen p-8">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <section>
-          <h1 className="text-3xl font-bold mb-4">
-            {query ? `Search Results for "${query}"` : 'Search Crew'}
-          </h1>
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Search className="h-5 w-5 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold">
+              {query ? `Results for "${query}"` : 'Search Crew'}
+            </h1>
+          </div>
           {total > 0 && (
-            <p className="text-muted-foreground mb-6">
-              Found {total} {total === 1 ? 'result' : 'results'}
+            <p className="text-muted-foreground ml-13">
+              Found <span className="font-medium text-foreground">{total}</span>{' '}
+              {total === 1 ? 'crew member' : 'crew members'}
             </p>
           )}
-        </section>
+        </div>
 
         {/* Search Filters */}
         <SearchFilters />
 
+        {/* Results */}
         {profiles.length === 0 ? (
-          <section>
-            <p className="text-muted-foreground text-lg">
-              No results found. Try adjusting your search criteria.
-            </p>
-          </section>
+          <EmptyState
+            variant="search"
+            title="No crew members found"
+            description={
+              query
+                ? `We couldn't find any crew members matching "${query}". Try adjusting your search or filters.`
+                : 'Try searching for a role, location, or crew member name.'
+            }
+            action={{
+              label: 'Clear filters',
+              href: '/search',
+            }}
+          />
         ) : (
           <>
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {profiles.map((profile) => (
                 <ProfileCard key={profile.id} profile={profile} />
               ))}
@@ -241,7 +270,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </>
         )}
       </div>
-    </main>
+    </div>
   )
 }
-
