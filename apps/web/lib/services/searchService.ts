@@ -3,6 +3,8 @@
  * Handles search query parsing and building search queries
  */
 
+import { normalizeRole } from '@/lib/constants/crewRoles'
+
 export interface ParsedSearchQuery {
   text: string
   role?: string
@@ -113,25 +115,26 @@ export function buildSearchQuery(params: SearchQueryParams): BuiltSearchQuery {
     years_experience_min,
     years_experience_max,
     page = 1,
-    limit = 20,
+    limit = 50,
   } = params
 
   const filters: SearchFilters = {}
 
-  // Parse query text if provided
-  let textQuery: string | undefined = q?.trim()
-  let parsedQuery: ParsedSearchQuery | undefined
+  // Use q directly as text search — don't parse it for filters
+  // when explicit filters (role, city, state) are provided via the form
+  const textQuery: string | undefined = q?.trim() || undefined
+  const hasExplicitFilters = !!(role || city || state)
 
-  if (q) {
+  let parsedQuery: ParsedSearchQuery | undefined
+  if (q && !hasExplicitFilters) {
     parsedQuery = parseSearchQuery(q)
-    textQuery = parsedQuery.text
   }
 
   // Apply explicit filters (override parsed query if both provided)
   if (role) {
-    filters.role = role
+    filters.role = normalizeRole(role)
   } else if (parsedQuery?.role) {
-    filters.role = parsedQuery.role
+    filters.role = normalizeRole(parsedQuery.role)
   }
 
   if (city) {

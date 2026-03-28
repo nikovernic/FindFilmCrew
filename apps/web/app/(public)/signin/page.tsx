@@ -1,21 +1,22 @@
 import { redirect } from 'next/navigation'
-import { authService } from '@/lib/services/authService'
+import { createClient } from '@/lib/supabase/server'
 import { SignInForm } from '@/components/auth/SignInForm'
 import type { Metadata } from 'next'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Sign In | Crew Up',
   description: 'Sign in to your Crew Up account to manage your profile.',
-  robots: 'noindex, nofollow', // Don't index sign-in page
+  robots: 'noindex, nofollow',
 }
 
 export default async function SignInPage() {
-  // Check if user is already authenticated
-  const user = await authService.getCurrentUser()
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
-    // Redirect authenticated users to profile edit page
-    redirect('/crew/profile/edit')
+    redirect('/profile/edit')
   }
 
   return (

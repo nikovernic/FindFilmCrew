@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import { ContactNotificationEmail } from '@/emails/contact-notification'
 import { ClaimInvitationEmail } from '@/emails/claim-invitation'
 import { ClaimReminderEmail } from '@/emails/claim-reminder'
+import { GetListedNotificationEmail } from '@/emails/get-listed-notification'
 import { render } from '@react-email/render'
 import type { Profile } from '@crew-up/shared'
 import { getAbsoluteUrl } from '@/lib/utils/url'
@@ -182,6 +183,63 @@ export class EmailService {
     } catch (error) {
       // Log error but don't expose Resend API details to caller
       console.error('Failed to send claim reminder email:', error)
+      
+      // Re-throw as generic error
+      if (error instanceof Error) {
+        throw new Error(`Email service error: ${error.message}`)
+      }
+      throw new Error('Email service error: Unknown error occurred')
+    }
+  }
+
+  /**
+   * Send get listed notification email to admin
+   */
+  async sendGetListedNotification(
+    profile: Profile,
+    idPhotoUrl?: string | null
+  ): Promise<void> {
+    try {
+      const resend = this.getResendClient()
+      const adminEmail = config.adminEmail
+
+      if (!adminEmail) {
+        throw new Error('ADMIN_EMAIL environment variable is not set')
+      }
+
+      // Construct admin dashboard URL
+      const adminDashboardUrl = getAbsoluteUrl('/admin')
+
+      // Render React Email template to HTML
+      const emailHtml = await render(
+        GetListedNotificationEmail({
+          profile,
+          adminDashboardUrl,
+          idPhotoUrl: idPhotoUrl || profile.verification_id_url,
+        })
+      )
+
+      // Send email via Resend API
+      const result = await resend.emails.send({
+        from: 'Crew Up <onboarding@resend.dev>', // Using Resend default domain (can update to findfilmcrew.com after domain verification)
+        to: adminEmail,
+        subject: `New Profile Submission: ${profile.name}`,
+        html: emailHtml,
+      })
+
+      if (result.error) {
+        throw new Error(`Failed to send email: ${result.error.message}`)
+      }
+
+      // Log successful email send
+      console.log(`Get listed notification email sent to ${adminEmail}`, {
+        emailId: result.data?.id,
+        profileId: profile.id,
+        timestamp: new Date().toISOString(),
+      })
+    } catch (error) {
+      // Log error but don't expose Resend API details to caller
+      console.error('Failed to send get listed notification email:', error)
       
       // Re-throw as generic error
       if (error instanceof Error) {

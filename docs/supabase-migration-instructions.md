@@ -58,10 +58,58 @@ This adds:
 
 ---
 
+---
+
+## Migration 4: Update Department Constraint
+
+**File:** `apps/web/supabase/migrations/009_update_department_constraint.sql`
+
+1. In SQL Editor, click "New query"
+2. Copy the ENTIRE contents of the file above
+3. Paste into SQL Editor
+4. Click "Run"
+5. Wait for "Success" message
+
+This updates:
+- Department constraint to include 'wardrobe' and 'hmu'
+
+---
+
+## Migration 5: Add IMDB URL
+
+**File:** `apps/web/supabase/migrations/010_add_imdb_url.sql`
+
+1. In SQL Editor, click "New query"
+2. Copy the ENTIRE contents of the file above
+3. Paste into SQL Editor
+4. Click "Run"
+5. Wait for "Success" message
+
+This adds:
+- `imdb_url` column to profiles table
+
+---
+
+## Migration 6: Add Credits Text Field
+
+**File:** `apps/web/supabase/migrations/011_add_credits_text_field.sql`
+
+1. In SQL Editor, click "New query"
+2. Copy the ENTIRE contents of the file above
+3. Paste into SQL Editor
+4. Click "Run"
+5. Wait for "Success" message
+
+This adds:
+- `credits` column to profiles table (text field for free-form credits)
+
+---
+
 ## After Migrations
 
-Once all 3 migrations are done:
+Once all migrations are done:
 1. Go to Storage → Create bucket `profile-photos` (public)
-2. Restart your dev server
-3. Add some test data to see it working!
+2. Set up storage policies (see `docs/supabase-setup-guide.md`)
+3. Restart your dev server
+4. Add some test data to see it working!
 

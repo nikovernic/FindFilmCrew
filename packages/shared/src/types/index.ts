@@ -19,6 +19,7 @@ export interface Profile {
   primary_location_city: string
   primary_location_state: string
   bio: string | null
+  credits: string | null
   photo_url: string | null
   contact_email: string
   contact_phone: string | null
@@ -26,15 +27,24 @@ export interface Profile {
   website: string | null
   instagram_url: string | null
   vimeo_url: string | null
+  imdb_url: string | null
   union_status: 'union' | 'non-union' | 'either' | null
   years_experience: number | null
   secondary_roles: string[] | null
+  specialties: string[] | null
   additional_markets: Array<{ city: string; state: string }> | null
+  is_featured: boolean
+  is_low_priority: boolean
   is_claimed: boolean
   claim_token: string | null
   claim_token_expires_at: string | null
   reminder_sent_at_7days: string | null
   reminder_sent_at_14days: string | null
+  profile_status: 'pending_review' | 'approved' | 'rejected'
+  is_verified: boolean
+  verification_id_url: string | null
+  verification_requested_at: string | null
+  verified_at: string | null
   slug: string
   created_at: string
   updated_at: string
@@ -63,5 +73,17 @@ export interface ContactInquiry {
   message: string
   shoot_dates: string | null
   created_at: string
+}
+
+export interface Subscription {
+  id: string
+  user_id: string
+  profile_id: string
+  stripe_subscription_id: string
+  status: 'active' | 'canceled' | 'past_due' | 'unpaid'
+  current_period_start: string
+  current_period_end: string
+  created_at: string
+  updated_at: string
 }
 

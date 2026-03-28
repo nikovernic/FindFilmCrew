@@ -14,7 +14,7 @@ const createProfileSchema = z.object({
   primary_location_state: z.string().length(2, 'State must be 2-letter code'),
   contact_email: z.string().email('Invalid email address'),
   contact_phone: z.string().optional().nullable(),
-  bio: z.string().max(250, 'Bio must be 250 characters or less').optional().nullable(),
+  bio: z.string().max(2000, 'Bio must be 2000 characters or less').optional().nullable(),
   portfolio_url: z.string().url().optional().nullable().or(z.literal('')),
   website: z.string().url().optional().nullable().or(z.literal('')),
   instagram_url: z.string().url().optional().nullable().or(z.literal('')),
@@ -22,6 +22,7 @@ const createProfileSchema = z.object({
   union_status: z.enum(['union', 'non-union', 'either']).optional().nullable(),
   years_experience: z.number().int().positive().optional().nullable(),
   secondary_roles: z.array(z.string()).optional().nullable(),
+  specialties: z.array(z.string()).optional().nullable(),
   additional_markets: z
     .array(
       z.object({
@@ -32,6 +33,33 @@ const createProfileSchema = z.object({
     .optional()
     .nullable(),
 })
+
+export async function GET(request: NextRequest) {
+  try {
+    // Check admin authentication
+    const auth = await requireAdmin(request)
+    if (auth instanceof NextResponse) return auth
+
+    // Get query params
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = parseInt(searchParams.get('limit') || '50', 10)
+    const search = searchParams.get('search') || undefined
+
+    // If status is pending_review, return pending profiles
+    if (status === 'pending_review') {
+      const pendingProfiles = await profileService.getPendingProfiles()
+      return NextResponse.json(pendingProfiles, { status: 200 })
+    }
+
+    // Otherwise return all profiles with pagination and search
+    const result = await profileService.getAllProfiles(page, limit, search)
+    return NextResponse.json(result, { status: 200 })
+  } catch (error) {
+    return handleError(error)
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

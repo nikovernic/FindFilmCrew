@@ -83,15 +83,14 @@ describe('ProfileHeader', () => {
     expect(screen.getByText('Experienced gaffer with 10 years in the industry')).toBeInTheDocument()
   })
 
-  it('should render contact email link', () => {
+  it('should render contact email reveal button', () => {
     render(<ProfileHeader profile={baseProfile} />)
 
-    const emailLink = screen.getByText('john@example.com')
-    expect(emailLink).toBeInTheDocument()
-    expect(emailLink).toHaveAttribute('href', 'mailto:john@example.com')
+    const emailButton = screen.getByText(/Click to reveal email/i)
+    expect(emailButton).toBeInTheDocument()
   })
 
-  it('should render contact phone link when provided', () => {
+  it('should render contact phone reveal button when provided', () => {
     const profileWithPhone = {
       ...baseProfile,
       contact_phone: '555-1234',
@@ -99,9 +98,8 @@ describe('ProfileHeader', () => {
 
     render(<ProfileHeader profile={profileWithPhone} />)
 
-    const phoneLink = screen.getByText('555-1234')
-    expect(phoneLink).toBeInTheDocument()
-    expect(phoneLink).toHaveAttribute('href', 'tel:555-1234')
+    const phoneButton = screen.getByText(/Click to reveal phone/i)
+    expect(phoneButton).toBeInTheDocument()
   })
 
   it('should render website link when provided', () => {
@@ -166,7 +164,7 @@ describe('ProfileHeader', () => {
 
     render(<ProfileHeader profile={profileWithUnion} />)
 
-    expect(screen.getByText(/Union Status: union/i)).toBeInTheDocument()
+    expect(screen.getByText('union')).toBeInTheDocument()
   })
 
   it('should render years of experience when provided', () => {
@@ -177,7 +175,7 @@ describe('ProfileHeader', () => {
 
     render(<ProfileHeader profile={profileWithExperience} />)
 
-    expect(screen.getByText(/Experience: 10 years/i)).toBeInTheDocument()
+    expect(screen.getByText(/10 years experience/i)).toBeInTheDocument()
   })
 
   it('should render all optional fields when provided', () => {
@@ -200,13 +198,13 @@ describe('ProfileHeader', () => {
     expect(screen.getByText('Gaffer')).toBeInTheDocument()
     expect(screen.getByText('Nashville, TN')).toBeInTheDocument()
     expect(screen.getByText('Experienced gaffer')).toBeInTheDocument()
-    expect(screen.getByText('john@example.com')).toBeInTheDocument()
-    expect(screen.getByText('555-1234')).toBeInTheDocument()
+    expect(screen.getByText(/Click to reveal email/i)).toBeInTheDocument()
+    expect(screen.getByText(/Click to reveal phone/i)).toBeInTheDocument()
     expect(screen.getByText('Website')).toBeInTheDocument()
     expect(screen.getByText('Portfolio')).toBeInTheDocument()
     expect(screen.getByText('Instagram')).toBeInTheDocument()
     expect(screen.getByText('Vimeo')).toBeInTheDocument()
-    expect(screen.getByText(/Union Status: union/i)).toBeInTheDocument()
-    expect(screen.getByText(/Experience: 10 years/i)).toBeInTheDocument()
+    expect(screen.getByText('union')).toBeInTheDocument()
+    expect(screen.getByText(/10 years experience/i)).toBeInTheDocument()
   })
 })

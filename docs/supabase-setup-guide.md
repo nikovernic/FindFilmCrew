@@ -81,7 +81,13 @@ Once your project is ready:
    - **Policy definition:** `true`
    - Click "Save policy"
    
-   - Create another policy:
+   - Create another policy for public uploads (needed for Get Listed form):
+   - **Policy name:** `Public upload access`
+   - **Allowed operation:** `INSERT`
+   - **Policy definition:** `true`
+   - Click "Save policy"
+   
+   - Optional: Create authenticated upload policy (for admin/authenticated users):
    - **Policy name:** `Authenticated upload`
    - **Allowed operation:** `INSERT`
    - **Policy definition:** `auth.role() = 'authenticated'`

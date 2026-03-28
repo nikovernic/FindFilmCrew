@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
-// Zod schema for form validation (matches API schema)
+// Zod schema for form validation
 const signInFormSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
@@ -15,7 +16,6 @@ const signInFormSchema = z.object({
 type SignInFormData = z.infer<typeof signInFormSchema>
 
 export function SignInForm() {
-  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null
@@ -40,52 +40,31 @@ export function SignInForm() {
     setSubmitStatus({ type: null, message: '' })
 
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
+      const supabase = createClient()
+      console.log('Attempting sign in for:', data.email)
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       })
 
-      const result = await response.json()
+      console.log('Sign in result:', { authData, authError })
 
-      if (!response.ok) {
-        // Handle error response
+      if (authError) {
+        console.error('Sign in error:', authError.message)
         let errorMessage = 'Failed to sign in. Please try again.'
-
-        if (result.error?.code === 'INVALID_CREDENTIALS') {
+        if (authError.message.includes('Invalid login credentials')) {
           errorMessage = 'Invalid email or password. Please check your credentials and try again.'
-        } else if (result.error?.code === 'EMAIL_NOT_CONFIRMED') {
+        } else if (authError.message.includes('Email not confirmed')) {
           errorMessage = 'Please confirm your email address before signing in.'
-        } else if (result.error?.code === 'ACCOUNT_NOT_FOUND') {
-          errorMessage = 'Invalid email or password. Please check your credentials and try again.'
-        } else if (result.error?.message) {
-          errorMessage = result.error.message
         }
-
         setSubmitStatus({ type: 'error', message: errorMessage })
         return
       }
 
       // Success - redirect to profile edit page
-      if (result.redirectUrl) {
-        router.push(result.redirectUrl)
-      } else {
-        setSubmitStatus({
-          type: 'success',
-          message: 'Sign-in successful! Redirecting...',
-        })
-        // Fallback redirect after a delay
-        setTimeout(() => {
-          router.push('/')
-        }, 2000)
-      }
+      console.log('Sign in successful, redirecting...')
+      window.location.href = '/profile/edit'
     } catch (error) {
-      // Handle network or other errors
       setSubmitStatus({
         type: 'error',
         message: 'An error occurred. Please try again later.',
@@ -190,6 +169,30 @@ export function SignInForm() {
           </div>
         )}
       </form>
+
+      <div className="mt-8 pt-6 border-t">
+        <p className="text-sm font-medium mb-4">Don&apos;t have an account?</p>
+        <div className="space-y-3">
+          <Link
+            href="/signup"
+            className="block w-full px-4 py-3 border rounded-md text-center hover:bg-accent transition-colors"
+          >
+            <span className="font-medium text-sm">I&apos;m a Producer / PM / PC</span>
+            <span className="block text-xs text-muted-foreground mt-0.5">
+              Create an account to access crew contact info
+            </span>
+          </Link>
+          <Link
+            href="/get-listed"
+            className="block w-full px-4 py-3 border rounded-md text-center hover:bg-accent transition-colors"
+          >
+            <span className="font-medium text-sm">I&apos;m a Crew Member</span>
+            <span className="block text-xs text-muted-foreground mt-0.5">
+              Get listed in the directory and create your account
+            </span>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

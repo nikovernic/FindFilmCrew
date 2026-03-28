@@ -19,21 +19,80 @@ export async function POST(request: NextRequest) {
 
     // Authenticate user with Supabase Auth
     try {
-      const result = await authService.signIn({ email, password })
+      // Use Supabase client directly in API route to properly handle cookies
+      const { createClient } = await import('@/lib/supabase/server')
+      const supabase = createClient()
+      
+      // Sign in with password - this will set cookies automatically
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-      // Session is automatically created by Supabase Auth
-      // Return success response with redirect URL
-      return NextResponse.json(
+      if (authError) {
+        // Map Supabase auth errors to application errors
+        if (authError.message.includes('Invalid login credentials')) {
+          return NextResponse.json(
+            {
+              error: {
+                code: 'INVALID_CREDENTIALS',
+                message: 'Invalid email or password',
+                timestamp: new Date().toISOString(),
+                requestId: crypto.randomUUID(),
+              },
+            },
+            { status: 401 }
+          )
+        }
+        if (authError.message.includes('Email not confirmed')) {
+          return NextResponse.json(
+            {
+              error: {
+                code: 'EMAIL_NOT_CONFIRMED',
+                message: 'Please confirm your email address before signing in',
+                timestamp: new Date().toISOString(),
+                requestId: crypto.randomUUID(),
+              },
+            },
+            { status: 401 }
+          )
+        }
+        throw authError
+      }
+
+      if (!authData.user || !authData.session) {
+        throw new Error('Authentication failed: No user or session returned')
+      }
+
+      // Check if user is admin to determine redirect URL
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', authData.user.id)
+        .single()
+
+      // Determine redirect URL based on user role
+      let redirectUrl = '/profile/edit' // Default for crew members
+      if (userData?.role === 'admin') {
+        redirectUrl = '/admin'
+      }
+
+      // Create response with JSON body
+      const response = NextResponse.json(
         {
           message: 'Sign-in successful',
           user: {
-            id: result.user.id,
-            email: result.user.email,
+            id: authData.user.id,
+            email: authData.user.email,
           },
-          redirectUrl: '/crew/profile/edit', // TODO: Update when edit page is created (Story 6.4)
+          redirectUrl,
         },
         { status: 200 }
       )
+
+      // Supabase SSR automatically sets cookies via the createClient cookie handlers
+      // The cookies are already set in the supabase client, we just need to return the response
+      return response
     } catch (error) {
       // Handle auth service errors
       if (error instanceof Error) {

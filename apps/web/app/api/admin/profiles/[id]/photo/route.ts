@@ -141,8 +141,8 @@ export async function POST(
       data: { publicUrl },
     } = supabase.storage.from('profile-photos').getPublicUrl(filePath)
 
-    // Update profile with photo URL
-    const updatedProfile = await profileService.updateProfile(id, {
+    // Update profile with photo URL (use admin method to bypass RLS)
+    const updatedProfile = await profileService.updateProfileAsAdmin(id, {
       photo_url: publicUrl,
     })
 

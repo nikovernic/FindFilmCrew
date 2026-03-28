@@ -21,6 +21,17 @@ export async function requireAuth(request: NextRequest) {
 }
 
 export async function requireAdmin(request: NextRequest) {
+  // Check for admin token cookie (from password gate)
+  const adminToken = request.cookies.get('admin_token')?.value
+  const ADMIN_PASSWORD = 'findfilmcrew' // Should match AdminPasswordGate
+
+  if (adminToken === ADMIN_PASSWORD) {
+    // Password gate authentication - allow access
+    const supabase = createClient()
+    return { user: null, supabase, isPasswordAuth: true }
+  }
+
+  // Otherwise, check for Supabase auth
   const auth = await requireAuth(request)
   if (auth instanceof NextResponse) return auth
 

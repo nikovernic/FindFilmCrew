@@ -3,7 +3,6 @@ import { cache } from 'react'
 import { profileService } from '@/lib/services/profileService'
 import { ProfileHeader } from '@/components/profile/ProfileHeader'
 import { CreditsList } from '@/components/profile/CreditsList'
-import { ContactForm } from '@/components/profile/ContactForm'
 import type { Metadata } from 'next'
 import { getAbsoluteUrl } from '@/lib/utils/url'
 import { generateProfileSchema } from '@/lib/utils/schema'
@@ -90,10 +89,7 @@ export default async function ProfilePage({ params }: PageProps) {
       <main className="min-h-screen p-8">
         <div className="max-w-4xl mx-auto">
           <ProfileHeader profile={profile} />
-          <CreditsList credits={profile.credits} />
-          <div className="mt-8">
-            <ContactForm profileSlug={profile.slug} />
-          </div>
+          <CreditsList credits={profile.credits} creditsText={profile.creditsText} />
         </div>
       </main>
     </>

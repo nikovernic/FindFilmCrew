@@ -1,12 +1,13 @@
 import { profileService } from '@/lib/services/profileService'
 import { ProfileCard } from '@/components/profile/ProfileCard'
-import { SearchFilters } from '@/components/search/SearchFilters'
+import { SearchPageForm } from '@/components/search/SearchPageForm'
+
 import { EmptyState } from '@/components/ui/EmptyState'
 import { buildSearchQuery } from '@/lib/services/searchService'
 import type { Metadata } from 'next'
 import { getAbsoluteUrl } from '@/lib/utils/url'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface SearchPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -126,10 +127,9 @@ function PaginationControls({
       className="flex items-center justify-center gap-1 mt-12"
       aria-label="Pagination"
     >
-      {/* Previous button */}
       <Link
         href={currentPage > 1 ? buildUrl(currentPage - 1) : '#'}
-        className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded text-sm transition-colors ${
           currentPage > 1
             ? 'hover:bg-accent text-foreground'
             : 'text-muted-foreground/50 pointer-events-none'
@@ -140,7 +140,6 @@ function PaginationControls({
         Previous
       </Link>
 
-      {/* Page numbers */}
       <div className="flex items-center gap-1 mx-2">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
           if (
@@ -152,9 +151,9 @@ function PaginationControls({
               <Link
                 key={page}
                 href={buildUrl(page)}
-                className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg font-medium transition-colors ${
+                className={`min-w-[32px] h-8 flex items-center justify-center rounded text-sm transition-colors ${
                   page === currentPage
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-foreground text-background'
                     : 'hover:bg-accent'
                 }`}
               >
@@ -175,10 +174,9 @@ function PaginationControls({
         })}
       </div>
 
-      {/* Next button */}
       <Link
         href={currentPage < totalPages ? buildUrl(currentPage + 1) : '#'}
-        className={`inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded text-sm transition-colors ${
           currentPage < totalPages
             ? 'hover:bg-accent text-foreground'
             : 'text-muted-foreground/50 pointer-events-none'
@@ -218,25 +216,20 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Search className="h-5 w-5 text-primary" />
-            </div>
-            <h1 className="text-3xl font-bold">
-              {query ? `Results for "${query}"` : 'Search Crew'}
-            </h1>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-1">
+            {query ? `Results for "${query}"` : 'Search Crew'}
+          </h1>
           {total > 0 && (
-            <p className="text-muted-foreground ml-13">
+            <p className="text-sm text-muted-foreground">
               Found <span className="font-medium text-foreground">{total}</span>{' '}
               {total === 1 ? 'crew member' : 'crew members'}
             </p>
           )}
         </div>
 
-        {/* Search Filters */}
-        <SearchFilters />
+        {/* Search Form */}
+        <SearchPageForm />
 
         {/* Results */}
         {profiles.length === 0 ? (
@@ -255,7 +248,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           />
         ) : (
           <>
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+            <section className="divide-y-0">
               {profiles.map((profile) => (
                 <ProfileCard key={profile.id} profile={profile} />
               ))}

@@ -4,10 +4,29 @@ import { Film, Calendar, Clapperboard, Building2, User } from 'lucide-react'
 
 interface CreditsListProps {
   credits: Credit[]
+  creditsText?: string | null
 }
 
-export function CreditsList({ credits }: CreditsListProps) {
+export function CreditsList({ credits, creditsText }: CreditsListProps) {
+  // If no structured credits, check for text credits
   if (credits.length === 0) {
+    if (creditsText && creditsText.trim()) {
+      // Display text credits
+      return (
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold">Credits</h2>
+          <div className="p-4 rounded border bg-card">
+            <div className="prose prose-sm max-w-none">
+              <pre className="whitespace-pre-wrap font-sans text-muted-foreground leading-relaxed">
+                {creditsText}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    
+    // No credits at all
     return (
       <EmptyState
         variant="credits"
@@ -22,13 +41,10 @@ export function CreditsList({ credits }: CreditsListProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Film className="h-5 w-5 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold">Credits</h2>
-        <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
-          {credits.length}
+      <div className="flex items-center gap-2">
+        <h2 className="text-xl font-bold">Credits</h2>
+        <span className="text-sm text-muted-foreground">
+          ({credits.length})
         </span>
       </div>
 
@@ -36,11 +52,11 @@ export function CreditsList({ credits }: CreditsListProps) {
         {sortedCredits.map((credit) => (
           <div
             key={credit.id}
-            className="group relative p-5 rounded-xl border bg-card hover:border-primary/30 transition-colors"
+            className="group relative p-4 rounded border bg-card hover:border-foreground/20 transition-colors"
           >
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-base font-semibold mb-2">
                   {credit.project_title}
                 </h3>
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">

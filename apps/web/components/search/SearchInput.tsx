@@ -118,7 +118,7 @@ export function SearchInput({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setIsOpen(true)}
             placeholder={placeholder}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="w-full pl-12 pr-4 py-2.5 rounded border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
             autoComplete="off"
             autoFocus={autoFocus}
           />
@@ -136,7 +136,7 @@ export function SearchInput({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background border rounded-xl shadow-lg z-50 overflow-hidden animate-scale-in">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded z-50 overflow-hidden">
           {/* Recent searches */}
           {recentSearches.length > 0 && !query && (
             <div className="p-3 border-b">
@@ -157,7 +157,7 @@ export function SearchInput({
                   <button
                     key={index}
                     onClick={() => handleSearch(search)}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm transition-colors flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 hover:bg-accent text-sm transition-colors flex items-center gap-2"
                   >
                     <Clock className="h-4 w-4 text-muted-foreground" />
                     {search}
@@ -199,7 +199,7 @@ export function SearchInput({
                   <button
                     key={index}
                     onClick={() => handleSearch(market)}
-                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-accent text-sm transition-colors"
+                    className="w-full text-left px-3 py-2 hover:bg-accent text-sm transition-colors"
                   >
                     {market}
                   </button>

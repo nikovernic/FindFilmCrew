@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { POST } from '@/app/api/admin/profiles/route'
+import { GET, POST } from '@/app/api/admin/profiles/route'
 import { NextRequest, NextResponse } from 'next/server'
 import type { Profile } from '@crew-up/shared'
 
@@ -11,6 +11,7 @@ vi.mock('@/lib/middleware/auth', () => ({
 vi.mock('@/lib/services/profileService', () => ({
   profileService: {
     createProfile: vi.fn(),
+    getPendingProfiles: vi.fn(),
   },
 }))
 
@@ -307,6 +308,139 @@ describe('POST /api/admin/profiles', () => {
     expect(profileService.createProfile).toHaveBeenCalled()
     expect(claimService.saveClaimToken).toHaveBeenCalled()
     expect(emailService.sendClaimInvitation).not.toHaveBeenCalled()
+  })
+})
+
+describe('GET /api/admin/profiles', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should return pending profiles when status=pending_review', async () => {
+    // Mock admin authentication
+    vi.mocked(requireAdmin).mockResolvedValue({
+      user: { id: 'admin-1', role: 'admin' },
+    } as any)
+
+    const mockPendingProfiles: Profile[] = [
+      {
+        id: 'profile-1',
+        user_id: null,
+        name: 'Jane Smith',
+        primary_role: '1st AC',
+        primary_location_city: 'Los Angeles',
+        primary_location_state: 'CA',
+        contact_email: 'jane@example.com',
+        slug: 'jane-smith-1st-ac-los-angeles',
+        is_claimed: false,
+        claim_token: null,
+        claim_token_expires_at: null,
+        reminder_sent_at_7days: null,
+        reminder_sent_at_14days: null,
+        profile_status: 'pending_review',
+        is_verified: false,
+        verification_id_url: null,
+        verification_requested_at: null,
+        verified_at: null,
+        bio: null,
+        photo_url: null,
+        contact_phone: null,
+        portfolio_url: null,
+        website: null,
+        instagram_url: null,
+        vimeo_url: null,
+        union_status: null,
+        years_experience: null,
+        secondary_roles: null,
+        additional_markets: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]
+
+    vi.mocked(profileService.getPendingProfiles).mockResolvedValue(mockPendingProfiles)
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/admin/profiles?status=pending_review',
+      {
+        method: 'GET',
+      }
+    )
+
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(Array.isArray(data)).toBe(true)
+    expect(data.length).toBe(1)
+    expect(data[0].profile_status).toBe('pending_review')
+    expect(profileService.getPendingProfiles).toHaveBeenCalled()
+  })
+
+  it('should require admin authentication', async () => {
+    const unauthorizedResponse = NextResponse.json(
+      {
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required',
+          timestamp: new Date().toISOString(),
+          requestId: 'test-request-id',
+        },
+      },
+      { status: 401 }
+    )
+    vi.mocked(requireAdmin).mockResolvedValue(unauthorizedResponse as any)
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/admin/profiles?status=pending_review',
+      {
+        method: 'GET',
+      }
+    )
+
+    const response = await GET(request)
+
+    expect(response.status).toBe(401)
+    expect(profileService.getPendingProfiles).not.toHaveBeenCalled()
+  })
+
+  it('should return 400 for invalid status filter', async () => {
+    vi.mocked(requireAdmin).mockResolvedValue({
+      user: { id: 'admin-1', role: 'admin' },
+    } as any)
+
+    const request = new NextRequest('http://localhost:3000/api/admin/profiles?status=invalid', {
+      method: 'GET',
+    })
+
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Invalid status filter')
+    expect(profileService.getPendingProfiles).not.toHaveBeenCalled()
+  })
+
+  it('should return empty array when no pending profiles exist', async () => {
+    vi.mocked(requireAdmin).mockResolvedValue({
+      user: { id: 'admin-1', role: 'admin' },
+    } as any)
+
+    vi.mocked(profileService.getPendingProfiles).mockResolvedValue([])
+
+    const request = new NextRequest(
+      'http://localhost:3000/api/admin/profiles?status=pending_review',
+      {
+        method: 'GET',
+      }
+    )
+
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(Array.isArray(data)).toBe(true)
+    expect(data.length).toBe(0)
   })
 })
 

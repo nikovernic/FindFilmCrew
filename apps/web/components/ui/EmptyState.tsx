@@ -55,24 +55,13 @@ export function EmptyState({
   const Icon = config.icon
 
   return (
-    <div className={cn('flex flex-col items-center justify-center py-16 px-4 text-center', className)}>
-      {/* Decorative background circles */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-32 w-32 rounded-full bg-muted/50" />
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-24 w-24 rounded-full bg-muted/70" />
-        </div>
-        <div className="relative flex items-center justify-center h-16 w-16 rounded-full bg-muted">
-          <Icon className="h-8 w-8 text-muted-foreground" />
-        </div>
-      </div>
+    <div className={cn('flex flex-col items-center justify-center py-12 px-4 text-center', className)}>
+      <Icon className="h-6 w-6 text-muted-foreground mb-4" />
 
-      <h3 className="text-xl font-semibold mb-2">
+      <h3 className="text-base font-semibold mb-1">
         {title || config.title}
       </h3>
-      <p className="text-muted-foreground max-w-md mb-6">
+      <p className="text-sm text-muted-foreground max-w-md mb-4">
         {description || config.description}
       </p>
 
@@ -80,14 +69,14 @@ export function EmptyState({
         action.href ? (
           <Link
             href={action.href}
-            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+            className="text-sm underline text-muted-foreground hover:text-foreground transition-colors"
           >
             {action.label}
           </Link>
         ) : (
           <button
             onClick={action.onClick}
-            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+            className="text-sm underline text-muted-foreground hover:text-foreground transition-colors"
           >
             {action.label}
           </button>

@@ -1,0 +1,66 @@
+schema: 1
+story: "7.1"
+story_title: "Get Listed Admin Review & Verified Subscription System"
+gate: CONCERNS
+status_reason: "Implementation is solid and functional, but missing rate limiting on public endpoint is a security concern. Unit test coverage is incomplete, though integration tests provide good coverage."
+reviewer: "Quinn (Test Architect)"
+updated: "2025-01-27T00:00:00Z"
+
+waiver: { active: false }
+
+top_issues:
+  - id: "SEC-001"
+    severity: medium
+    finding: "Rate limiting not implemented on /api/profiles/get-listed endpoint despite being mentioned in security considerations"
+    suggested_action: "Add rate limiting using checkRateLimit utility or Redis-based solution before production deployment"
+    suggested_owner: "dev"
+  - id: "TEST-001"
+    severity: low
+    finding: "Missing unit tests for new service methods (createPendingProfile, getPendingProfiles, updateProfileStatus, sendGetListedNotification)"
+    suggested_action: "Add unit tests for service layer methods to improve test coverage and maintainability"
+    suggested_owner: "dev"
+  - id: "TEST-002"
+    severity: low
+    finding: "Missing unit tests for React components (GetListedForm, PendingReviewSection, ProfileStatusBadge)"
+    suggested_action: "Add unit tests for components to test form validation, file upload, loading states, and badge display logic"
+    suggested_owner: "dev"
+  - id: "FEAT-001"
+    severity: low
+    finding: "Email templates for approval/rejection notifications to users are incomplete (only console.log)"
+    suggested_action: "Create email templates for user notifications when profiles are approved or rejected"
+    suggested_owner: "dev"
+
+quality_score: 75
+expires: "2025-02-10T00:00:00Z"
+
+evidence:
+  tests_reviewed: 18
+  risks_identified: 4
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 9, 10, 12, 13]
+    ac_gaps: [7, 8, 11]
+
+nfr_validation:
+  security:
+    status: CONCERNS
+    notes: "Missing rate limiting on public get-listed endpoint. File upload validation and admin auth are properly implemented."
+  performance:
+    status: PASS
+    notes: "Non-blocking email sends, proper database indexes, optimized search queries."
+  reliability:
+    status: PASS
+    notes: "Comprehensive error handling, graceful degradation for email failures."
+  maintainability:
+    status: PASS
+    notes: "Clean code structure, follows patterns, good separation of concerns."
+
+recommendations:
+  immediate:
+    - action: "Add rate limiting to /api/profiles/get-listed endpoint"
+      refs: ["apps/web/app/api/profiles/get-listed/route.ts"]
+  future:
+    - action: "Add unit tests for service methods and components"
+      refs: ["apps/web/lib/services/profileService.ts", "apps/web/lib/services/emailService.ts", "apps/web/components/profile/GetListedForm.tsx", "apps/web/components/admin/PendingReviewSection.tsx", "apps/web/components/profile/ProfileStatusBadge.tsx"]
+    - action: "Create email templates for approval/rejection user notifications"
+      refs: ["apps/web/app/api/admin/profiles/[id]/approve/route.ts", "apps/web/app/api/admin/profiles/[id]/reject/route.ts"]
+

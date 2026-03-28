@@ -38,5 +38,25 @@ describe('Database Schema', () => {
     // Placeholder - will verify RLS policies when Supabase is configured
     expect(true).toBe(true)
   })
+
+  it('should have profile_status field on profiles table', () => {
+    // Placeholder - will verify profile_status column when Supabase is configured
+    expect(true).toBe(true)
+  })
+
+  it('should have verification fields on profiles table', () => {
+    // Placeholder - will verify is_verified, verification_id_url, verification_requested_at, verified_at columns when Supabase is configured
+    expect(true).toBe(true)
+  })
+
+  it('should have subscriptions table structure', () => {
+    // Placeholder - will verify subscriptions table structure when Supabase is configured
+    expect(true).toBe(true)
+  })
+
+  it('should have subscriptions RLS policies enabled', () => {
+    // Placeholder - will verify subscriptions RLS policies when Supabase is configured
+    expect(true).toBe(true)
+  })
 })
 

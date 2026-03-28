@@ -1,68 +1,78 @@
 import Link from 'next/link'
 import type { Profile, Credit } from '@crew-up/shared'
 import { Avatar } from '@/components/ui/Avatar'
-import { MapPin, ArrowRight, Film } from 'lucide-react'
 
 interface ProfileCardProps {
-  profile: Profile & { credits: Credit[] }
+  profile: Omit<Profile, 'credits'> & { credits: Credit[] }
+}
+
+function truncateBio(bio: string | null, max: number = 80): string | null {
+  if (!bio) return null
+  if (bio.length <= max) return bio
+  const cut = bio.substring(0, max).trim()
+  const lastSpace = cut.lastIndexOf(' ')
+  return (lastSpace > max * 0.6 ? cut.substring(0, lastSpace) : cut) + '...'
 }
 
 export function ProfileCard({ profile }: ProfileCardProps) {
-  // Get top 3 credits (already sorted by display_order from service)
-  const topCredits = profile.credits.slice(0, 3)
+  const topCredits = profile.credits.slice(0, 2)
+  const location = `${profile.primary_location_city}, ${profile.primary_location_state}`
+  const bio = truncateBio(profile.bio)
 
   return (
-    <article className="border rounded-xl p-6 bg-card card-hover group">
-      <div className="flex gap-4">
-        {/* Profile Photo */}
-        <Avatar
-          src={profile.photo_url}
-          alt={profile.name}
-          name={profile.name}
-          size="lg"
-        />
+    <Link
+      href={`/crew/${profile.slug}`}
+      className="flex gap-3 border-b py-3 hover:bg-muted/50 -mx-2 px-2"
+    >
+      <Avatar
+        src={profile.photo_url}
+        alt={profile.name}
+        name={profile.name}
+        size="sm"
+      />
 
-        {/* Profile Info */}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
-            {profile.name}
-          </h3>
-          <p className="text-muted-foreground mb-1 font-medium">
-            {profile.primary_role}
-          </p>
-          <p className="text-sm text-muted-foreground mb-3 flex items-center gap-1">
-            <MapPin className="h-3.5 w-3.5" />
-            {profile.primary_location_city}, {profile.primary_location_state}
-          </p>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline justify-between gap-4">
+          <div className="min-w-0">
+            <span className="font-medium text-sm">{profile.name}</span>
+            <span className="text-muted-foreground text-sm ml-1.5">{profile.primary_role}</span>
+            {profile.secondary_roles && profile.secondary_roles.length > 0 && (
+              <span className="text-muted-foreground/60 text-xs"> · {profile.secondary_roles.join(', ')}</span>
+            )}
+          </div>
+          <span className="text-xs text-muted-foreground whitespace-nowrap">{location}</span>
+        </div>
 
-          {/* Top 3 Credits */}
+        {bio && (
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{bio}</p>
+        )}
+
+        <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
           {topCredits.length > 0 && (
-            <div className="space-y-1.5 mb-4">
-              {topCredits.map((credit) => (
-                <div key={credit.id} className="text-sm text-muted-foreground flex items-start gap-2">
-                  <Film className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground/70" />
-                  <span>
-                    <span className="font-medium text-foreground">{credit.project_title}</span>
-                    {' · '}
-                    <span>{credit.role}</span>
-                    {' · '}
-                    <span>{credit.year}</span>
-                  </span>
-                </div>
+            <span>
+              {topCredits.map((credit, i) => (
+                <span key={credit.id}>
+                  {i > 0 && ' · '}
+                  {credit.project_title} ({credit.year})
+                </span>
               ))}
-            </div>
+            </span>
           )}
-
-          {/* View Profile Link */}
-          <Link
-            href={`/crew/${profile.slug}`}
-            className="inline-flex items-center gap-1 text-primary hover:gap-2 transition-all text-sm font-medium"
-          >
-            View Profile
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          {profile.years_experience && (
+            <span>{profile.years_experience}yr exp</span>
+          )}
+          {profile.is_verified && (
+            <span className="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">
+              ✓ Verified
+            </span>
+          )}
+          {profile.is_featured && (
+            <span className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-1.5 py-0.5 rounded text-[11px]">
+              ★ Featured
+            </span>
+          )}
         </div>
       </div>
-    </article>
+    </Link>
   )
 }

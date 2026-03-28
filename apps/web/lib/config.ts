@@ -9,5 +9,6 @@ export const config = {
   isProduction: process.env.NODE_ENV === 'production',
   isTest: process.env.NODE_ENV === 'test',
   resendApiKey: process.env.RESEND_API_KEY,
+  adminEmail: process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL,
 } as const
 
