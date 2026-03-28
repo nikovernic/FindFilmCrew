@@ -944,7 +944,7 @@ export function GetListedForm() {
             aria-invalid={errors.bio ? 'true' : 'false'}
           />
           <p className="mt-1 text-sm text-muted-foreground">
-            Bios help crew book more gigs! Get creative, tell us what your specialty is, your experience, and what you're like on set!
+            Bios help crew book more gigs! Get creative, tell us what your specialty is, your experience, and what you&apos;re like on set!
           </p>
           {errors.bio && (
             <p className="mt-1 text-sm text-destructive" role="alert">

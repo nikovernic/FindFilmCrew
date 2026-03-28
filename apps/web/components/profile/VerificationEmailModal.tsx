@@ -87,7 +87,7 @@ export function VerificationEmailModal({
             </p>
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li>A clear photo of your government-issued ID</li>
-              <li>We'll review and verify your profile within 1-2 business days</li>
+              <li>We&apos;ll review and verify your profile within 1-2 business days</li>
             </ul>
           </div>
         </div>

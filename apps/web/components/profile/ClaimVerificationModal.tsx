@@ -152,7 +152,7 @@ export function ClaimVerificationModal({
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>A clear photo of your government-issued ID</li>
                   <li>Your profile name in the email</li>
-                  <li>We'll review and link the profile to your account within 1-2 business days</li>
+                  <li>We&apos;ll review and link the profile to your account within 1-2 business days</li>
                 </ul>
               </div>
             </>
