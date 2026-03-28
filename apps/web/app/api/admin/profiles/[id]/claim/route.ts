@@ -11,8 +11,8 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const authError = await requireAdmin(request)
-  if (authError) return authError
+  const authResult = await requireAdmin(request)
+  if (authResult instanceof NextResponse) return authResult
 
   try {
     const { email } = await request.json()
