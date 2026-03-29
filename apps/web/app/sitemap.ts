@@ -1,11 +1,12 @@
 import { MetadataRoute } from 'next'
-import { profileService } from '@/lib/services/profileService'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getBaseUrl } from '@/lib/utils/url'
+
+export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
 
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -21,11 +22,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Fetch all profile slugs
   try {
-    const profiles = await profileService.getAllProfileSlugs()
+    const supabase = createAdminClient()
+    let allProfiles: { slug: string; updated_at: string }[] = []
+    let offset = 0
+    while (true) {
+      const { data } = await supabase
+        .from('profiles')
+        .select('slug, updated_at')
+        .eq('profile_status', 'approved')
+        .range(offset, offset + 999)
+      if (!data || data.length === 0) break
+      allProfiles = allProfiles.concat(data)
+      if (data.length < 1000) break
+      offset += 1000
+    }
 
-    const profilePages: MetadataRoute.Sitemap = profiles.map((profile) => ({
+    const profilePages: MetadataRoute.Sitemap = allProfiles.map((profile) => ({
       url: `${baseUrl}/crew/${profile.slug}`,
       lastModified: new Date(profile.updated_at),
       changeFrequency: 'weekly',
@@ -34,7 +47,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticPages, ...profilePages]
   } catch (error) {
-    // If there's an error fetching profiles, return at least static pages
     console.error('Error generating sitemap:', error)
     return staticPages
   }

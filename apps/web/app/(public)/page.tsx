@@ -1,36 +1,33 @@
 import Link from 'next/link'
-import { unstable_cache } from 'next/cache'
 import { HomeSearchForm } from '@/components/search/HomeSearchForm'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeRole } from '@/lib/constants/crewRoles'
 
-const getDistinctRoles = unstable_cache(
-  async (): Promise<string[]> => {
-    const supabase = createClient()
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('primary_role, secondary_roles')
-      .eq('profile_status', 'approved')
+export const dynamic = 'force-dynamic'
 
-    if (!profiles) return []
+async function getDistinctRoles(): Promise<string[]> {
+  const supabase = createClient()
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('primary_role, secondary_roles')
+    .eq('profile_status', 'approved')
 
-    const roleSet = new Set<string>()
-    profiles.forEach((p) => {
-      if (p.primary_role) {
-        roleSet.add(normalizeRole(p.primary_role))
-      }
-      if (p.secondary_roles && Array.isArray(p.secondary_roles)) {
-        p.secondary_roles.forEach((r: string) => {
-          if (r) roleSet.add(normalizeRole(r))
-        })
-      }
-    })
+  if (!profiles) return []
 
-    return Array.from(roleSet).sort()
-  },
-  ['homepage-roles'],
-  { revalidate: 3600 }
-)
+  const roleSet = new Set<string>()
+  profiles.forEach((p) => {
+    if (p.primary_role) {
+      roleSet.add(normalizeRole(p.primary_role))
+    }
+    if (p.secondary_roles && Array.isArray(p.secondary_roles)) {
+      p.secondary_roles.forEach((r: string) => {
+        if (r) roleSet.add(normalizeRole(r))
+      })
+    }
+  })
+
+  return Array.from(roleSet).sort()
+}
 
 export default async function HomePage() {
   const roles = await getDistinctRoles()
