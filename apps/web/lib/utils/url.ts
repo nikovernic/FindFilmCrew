@@ -9,16 +9,15 @@
  */
 export function getBaseUrl(): string {
   // Allow explicit SITE_URL override (highest priority)
+  // Check both server-side and client-side env vars
+  if (process.env.SITE_URL) {
+    return process.env.SITE_URL
+  }
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL
   }
 
-  // Vercel provides VERCEL_URL in production/preview
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`
-  }
-
-  // Default to localhost for development
+  // Default to localhost for development, production domain otherwise
   return process.env.NODE_ENV === 'production'
     ? 'https://www.findfilmcrewtexas.com'
     : 'http://localhost:3000'
