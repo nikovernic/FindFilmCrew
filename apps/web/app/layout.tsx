@@ -8,8 +8,20 @@ import { Providers } from '@/components/Providers'
 const dmSans = DM_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700'] })
 
 export const metadata: Metadata = {
-  title: 'Crew Up - Find Production Crew Across the US',
-  description: 'Connect with qualified production crew members across the United States. Search by role, location, and experience.',
+  title: {
+    default: 'Find Film Crew in Texas | Camera Operators, DPs, Gaffers & More',
+    template: '%s | Find Film Crew Texas',
+  },
+  description: 'Search 1,200+ Texas film crew members. Find camera operators, DPs, gaffers, grips, sound mixers, and more in Austin, Dallas, Houston, and San Antonio.',
+  metadataBase: new URL('https://www.findfilmcrewtexas.com'),
+  openGraph: {
+    siteName: 'Find Film Crew Texas',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 export default function RootLayout({

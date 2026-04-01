@@ -7,6 +7,12 @@ export const dynamic = 'force-dynamic'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
 
+  const topRoles = [
+    'Camera Operator', 'Director of Photography', 'Gaffer', 'Key Grip',
+    'Sound Mixer', 'Hair & Makeup', '1st Assistant Camera', '2nd Assistant Camera',
+    'Production Designer', 'Production Assistant',
+  ]
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -15,11 +21,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
+      url: `${baseUrl}/search`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/get-listed`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
+    ...topRoles.map((role) => ({
+      url: `${baseUrl}/search?role=${encodeURIComponent(role)}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
   ]
 
   try {

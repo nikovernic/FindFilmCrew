@@ -62,17 +62,32 @@ export async function generateMetadata({
   searchParams,
 }: SearchPageProps): Promise<Metadata> {
   const query = typeof searchParams.q === 'string' ? searchParams.q : ''
-  const title = query
-    ? `Search Results for '${query}' - Crew Up`
-    : 'Search Crew - Crew Up'
-  const description = query
-    ? `Find crew members matching '${query}' on Crew Up`
-    : 'Search for production crew members across the United States'
+  const role = typeof searchParams.role === 'string' ? searchParams.role : ''
+  const city = typeof searchParams.city === 'string' ? searchParams.city : ''
+
+  let title: string
+  let description: string
+
+  if (role && city) {
+    title = `${role} in ${city}, Texas`
+    description = `Find ${role.toLowerCase()} crew members in ${city}, Texas. Browse profiles, credits, and contact info.`
+  } else if (role) {
+    title = `${role} in Texas`
+    description = `Find ${role.toLowerCase()} crew members in Texas. Browse profiles, credits, and contact info across Austin, Dallas, Houston, and more.`
+  } else if (query) {
+    title = `Search Results for '${query}' in Texas`
+    description = `Find Texas film crew matching '${query}'. Camera operators, DPs, gaffers, grips, and more.`
+  } else {
+    title = 'Search Texas Film Crew'
+    description = 'Search 1,200+ Texas film crew members. Find camera operators, DPs, gaffers, grips, sound mixers, and more.'
+  }
 
   const searchUrl = getAbsoluteUrl('/search')
   const urlWithQuery = query
     ? `${searchUrl}?q=${encodeURIComponent(query)}`
-    : searchUrl
+    : role
+      ? `${searchUrl}?role=${encodeURIComponent(role)}`
+      : searchUrl
 
   return {
     title,
@@ -84,7 +99,7 @@ export async function generateMetadata({
       title,
       description,
       url: urlWithQuery,
-      siteName: 'Crew Up',
+      siteName: 'Find Film Crew Texas',
       type: 'website',
     },
     twitter: {

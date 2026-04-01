@@ -20,7 +20,7 @@ export function getBaseUrl(): string {
 
   // Default to localhost for development
   return process.env.NODE_ENV === 'production'
-    ? 'https://crew-up.vercel.app' // Fallback for production
+    ? 'https://www.findfilmcrewtexas.com'
     : 'http://localhost:3000'
 }
 

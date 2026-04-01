@@ -1,9 +1,23 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { HomeSearchForm } from '@/components/search/HomeSearchForm'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeRole } from '@/lib/constants/crewRoles'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Find Film Crew in Texas | Camera Operators, DPs, Gaffers & More',
+  description: 'Search 1,200+ Texas film crew members. Find camera operators, DPs, gaffers, grips, sound mixers, hair & makeup artists in Austin, Dallas, Houston, and San Antonio.',
+  alternates: {
+    canonical: 'https://www.findfilmcrewtexas.com',
+  },
+  openGraph: {
+    title: 'Find Film Crew in Texas',
+    description: 'Search 1,200+ Texas film crew. Camera operators, DPs, gaffers, grips, sound mixers, and more.',
+    url: 'https://www.findfilmcrewtexas.com',
+  },
+}
 
 async function getDistinctRoles(): Promise<string[]> {
   const supabase = createClient()
@@ -32,8 +46,25 @@ async function getDistinctRoles(): Promise<string[]> {
 export default async function HomePage() {
   const roles = await getDistinctRoles()
 
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Find Film Crew Texas',
+    url: 'https://www.findfilmcrewtexas.com',
+    description: 'Search 1,200+ Texas film crew members by role and location.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.findfilmcrewtexas.com/search?q={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       {/* Hero Section */}
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">

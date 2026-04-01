@@ -28,7 +28,7 @@ export async function generateMetadata({
   }
 
   const profileUrl = getAbsoluteUrl(`/crew/${params.slug}`)
-  const title = `${profile.name} - ${profile.primary_role} in ${profile.primary_location_city}, ${profile.primary_location_state} | Crew Up`
+  const title = `${profile.name} - ${profile.primary_role} in ${profile.primary_location_city}, ${profile.primary_location_state}`
   const description = profile.bio || `${profile.name} is a ${profile.primary_role} based in ${profile.primary_location_city}, ${profile.primary_location_state}.`
 
   // Use profile photo for OG image if available
@@ -44,7 +44,7 @@ export async function generateMetadata({
       title: `${profile.name} - ${profile.primary_role}`,
       description,
       url: profileUrl,
-      siteName: 'Crew Up',
+      siteName: 'Find Film Crew Texas',
       type: 'profile',
       ...(ogImage && {
         images: [
