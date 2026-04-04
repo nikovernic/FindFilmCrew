@@ -67,7 +67,7 @@ export function AllProfilesSection({ onEditProfile }: AllProfilesSectionProps) {
         )
       )
     } catch {
-      setError('Failed to toggle featured status')
+      setError('Failed to toggle verified status')
     } finally {
       setTogglingFeatured(null)
     }
@@ -307,8 +307,8 @@ export function AllProfilesSection({ onEditProfile }: AllProfilesSectionProps) {
                           {togglingFeatured === profile.id
                             ? '...'
                             : profile.is_featured
-                            ? '★ High Priority'
-                            : 'High Pri'}
+                            ? '✓ Verified'
+                            : 'Verify'}
                         </button>
                         <button
                           onClick={() => toggleLowPriority(profile)}

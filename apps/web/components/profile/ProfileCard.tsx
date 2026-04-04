@@ -67,8 +67,8 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             </span>
           )}
           {profile.is_featured && (
-            <span className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-1.5 py-0.5 rounded text-[11px]">
-              ★ Featured
+            <span className="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">
+              ✓ Verified
             </span>
           )}
         </div>
